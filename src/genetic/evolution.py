@@ -115,15 +115,39 @@ class GeneticAlgorithm:
         return self.best_ever
 
     def _evaluate_population(self, data: pd.DataFrame, verbose: bool = True):
-        """Evaluate fitness for all individuals in population."""
+        """Evaluate fitness for all individuals in population with diversity bonus."""
         if verbose:
             iterator = tqdm(self.population.individuals, desc="Evaluating")
         else:
             iterator = self.population.individuals
 
+        # First pass: calculate base fitness
         for individual in iterator:
             fitness = self.fitness_function.evaluate(individual, data)
             individual.fitness = fitness
+
+        # Second pass: add diversity bonus
+        # Count how many of each indicator type we have
+        indicator_counts = {}
+        for individual in self.population.individuals:
+            entry_type = individual.genes['entry_indicator_type']
+            exit_type = individual.genes['exit_indicator_type']
+            combo = f"{entry_type}+{exit_type}"
+            indicator_counts[combo] = indicator_counts.get(combo, 0) + 1
+
+        # Apply diversity bonus: rare combinations get boosted
+        total_pop = len(self.population.individuals)
+        for individual in self.population.individuals:
+            entry_type = individual.genes['entry_indicator_type']
+            exit_type = individual.genes['exit_indicator_type']
+            combo = f"{entry_type}+{exit_type}"
+
+            # Rarity score: 1.0 for unique, 0.0 for common
+            rarity = 1.0 - (indicator_counts[combo] / total_pop)
+
+            # Add small diversity bonus (max 0.1)
+            diversity_bonus = rarity * 0.1
+            individual.fitness += diversity_bonus
 
     def _create_next_generation(self):
         """Create next generation using genetic operators."""
