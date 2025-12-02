@@ -141,9 +141,19 @@ with col2:
 
 # Genetic Algorithm Parameters
 st.sidebar.subheader("🧬 GA Parameters")
-population_size = st.sidebar.slider("Population Size", 20, 200, 100)
-generations = st.sidebar.slider("Generations", 10, 100, 50)
-mutation_rate = st.sidebar.slider("Mutation Rate", 0.05, 0.30, 0.15, 0.05)
+
+# Load defaults from config
+config_defaults = load_config()
+default_pop = config_defaults.get('genetic', {}).get('population_size', 150)
+default_gen = config_defaults.get('genetic', {}).get('generations', 75)
+default_mut = config_defaults.get('genetic', {}).get('mutation_rate', 0.25)
+
+population_size = st.sidebar.slider("Population Size", 50, 200, default_pop,
+                                    help="More = better diversity but slower")
+generations = st.sidebar.slider("Generations", 25, 150, default_gen,
+                                help="More = better convergence but slower")
+mutation_rate = st.sidebar.slider("Mutation Rate", 0.05, 0.40, default_mut, 0.05,
+                                  help="Higher = more exploration")
 
 # Backtesting Parameters
 st.sidebar.subheader("💰 Backtesting")
