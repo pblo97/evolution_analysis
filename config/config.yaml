@@ -1,0 +1,112 @@
+# Trading Strategy Genetic Algorithm Configuration
+
+# FMP API Configuration
+api:
+  base_url: "https://financialmodelingprep.com/api/v3"
+  rate_limit_calls: 250  # Calls per minute
+  rate_limit_period: 60  # Seconds
+
+# Data Configuration
+data:
+  symbol: "AAPL"  # Default symbol
+  start_date: "2019-01-01"
+  end_date: "2024-12-31"
+  interval: "daily"  # daily, hourly, etc.
+
+# Data Split Configuration (Anti-Overfitting Protection #1)
+split:
+  train_ratio: 0.50    # 50% for training
+  validation_ratio: 0.25  # 25% for validation
+  test_ratio: 0.25     # 25% for testing (NEVER touch until final evaluation)
+
+# Walk-Forward Configuration (Anti-Overfitting Protection #2)
+walk_forward:
+  enabled: true
+  train_window_months: 12  # Train on 12 months
+  test_window_months: 3    # Test on 3 months
+  step_months: 3           # Move forward 3 months each time
+
+# Genetic Algorithm Configuration
+genetic:
+  population_size: 100
+  generations: 50
+  mutation_rate: 0.15
+  crossover_rate: 0.7
+  elitism: 0.1  # Keep top 10% unchanged
+  tournament_size: 5
+
+  # Complexity Penalty (Anti-Overfitting Protection #3)
+  complexity_penalty: 0.05  # Penalize complex strategies
+  max_indicators: 3  # Maximum indicators per strategy
+
+# Strategy Search Space (Theory-Based Constraints - Anti-Overfitting Protection #5)
+strategy:
+  # Indicators to test
+  indicators:
+    - momentum
+    - rsi
+    - macd
+    - bollinger
+    - atr
+    - ema_cross
+
+  # Parameter ranges (based on literature)
+  parameters:
+    momentum:
+      lookback_min: 20
+      lookback_max: 200
+    rsi:
+      period_min: 10
+      period_max: 20
+      oversold_min: 25
+      oversold_max: 35
+      overbought_min: 65
+      overbought_max: 75
+    macd:
+      fast_min: 8
+      fast_max: 16
+      slow_min: 20
+      slow_max: 30
+      signal_min: 7
+      signal_max: 11
+    bollinger:
+      period_min: 15
+      period_max: 25
+      std_min: 1.5
+      std_max: 2.5
+    atr:
+      period_min: 10
+      period_max: 20
+      multiplier_min: 1.5
+      multiplier_max: 3.0
+    ema_cross:
+      fast_min: 20
+      fast_max: 50
+      slow_min: 100
+      slow_max: 200
+
+# Backtesting Configuration
+backtesting:
+  initial_capital: 100000
+  commission: 0.001  # 0.1% per trade
+  slippage: 0.0005   # 0.05% slippage
+  position_size: 1.0  # 100% of capital (will be adjusted by risk management)
+
+# Fitness Function Configuration (Multi-Objective)
+fitness:
+  sharpe_weight: 0.30
+  total_return_weight: 0.30
+  max_drawdown_weight: 0.20
+  win_rate_weight: 0.10
+  profit_factor_weight: 0.10
+
+  # Minimum thresholds
+  min_trades: 30  # Minimum trades to be valid
+  min_sharpe: 0.5  # Minimum Sharpe to consider
+
+# Reporting Configuration
+reporting:
+  save_plots: true
+  plot_format: "png"
+  verbose: true
+  save_best_strategies: 10  # Save top N strategies
