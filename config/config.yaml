@@ -36,7 +36,7 @@ genetic:
   tournament_size: 3  # Reduced for less selection pressure
 
   # Complexity Penalty (Anti-Overfitting Protection #3)
-  complexity_penalty: 0.10  # Increased penalty for complex strategies
+  complexity_penalty: 0.15  # Further increased to penalize overfitting
   max_indicators: 3  # Maximum indicators per strategy
 
 # Strategy Search Space (Evidence-Based Selection - Anti-Overfitting Protection #5)
@@ -56,7 +56,7 @@ strategy:
   # Parameter ranges (based on literature)
   parameters:
     momentum:
-      lookback_min: 20
+      lookback_min: 60  # Increased from 20 to prevent short-term overfitting
       lookback_max: 200
     bollinger:
       period_min: 15
@@ -89,8 +89,8 @@ fitness:
   win_rate_weight: 0.05  # Reduced (can be misleading)
   profit_factor_weight: 0.05  # Reduced (can be misleading)
 
-  # Minimum thresholds (very relaxed to allow diverse strategies)
-  min_trades: 10  # Minimum trades to be valid (reduced to allow more strategies)
+  # Minimum thresholds for statistical significance
+  min_trades: 30  # Increased from 10 to ensure statistical robustness
   min_sharpe: 0.0  # No minimum Sharpe (let GA explore)
 
 # Reporting Configuration
