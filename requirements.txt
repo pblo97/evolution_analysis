@@ -3,12 +3,8 @@ numpy>=1.24.0
 pandas>=2.0.0
 requests>=2.31.0
 
-# Technical indicators
-ta-lib>=0.4.28  # Technical Analysis Library
-pandas-ta>=0.3.14b  # Alternative if ta-lib install fails
-
-# Genetic algorithms
-deap>=1.4.1  # Distributed Evolutionary Algorithms in Python
+# Genetic algorithms (not needed, we implemented from scratch)
+# deap>=1.4.1
 
 # Visualization
 matplotlib>=3.7.0
