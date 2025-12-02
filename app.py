@@ -1,11 +1,12 @@
 """
 Streamlit Web Interface for Genetic Algorithm Trading Strategy Optimizer
 
-Run with: streamlit run streamlit_app.py
+Run with: streamlit run app.py
 """
 
 import streamlit as st
 import pandas as pd
+import numpy as np
 import yaml
 from pathlib import Path
 import plotly.graph_objects as go
@@ -14,10 +15,20 @@ from datetime import datetime
 import sys
 import os
 
-# Add src to path for imports
-current_dir = Path(__file__).parent
-sys.path.insert(0, str(current_dir))
+# Page config MUST be first Streamlit command
+st.set_page_config(
+    page_title="Trading Strategy Optimizer",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
+# Add parent directory to path for imports
+parent_dir = Path(__file__).parent.absolute()
+if str(parent_dir) not in sys.path:
+    sys.path.insert(0, str(parent_dir))
+
+# Now import our modules
 try:
     from src.data.fmp_client import FMPClient
     from src.data.data_loader import DataLoader
@@ -26,19 +37,21 @@ try:
     from src.backtesting.engine import BacktestEngine
     from src.backtesting.metrics import PerformanceMetrics
 except ImportError as e:
-    st.error(f"Error importing modules: {e}")
-    st.info("Current directory: " + str(current_dir))
-    st.info("Python path: " + str(sys.path))
+    st.error(f"❌ Error importing modules: {e}")
+    st.info(f"📁 Current directory: {parent_dir}")
+    st.info(f"🔍 Python path: {sys.path}")
+    st.code("Please ensure all required files are in the correct structure:\n"
+            "evolution_analysis/\n"
+            "├── app.py (this file)\n"
+            "└── src/\n"
+            "    ├── __init__.py\n"
+            "    ├── data/\n"
+            "    ├── indicators/\n"
+            "    ├── backtesting/\n"
+            "    ├── genetic/\n"
+            "    ├── validation/\n"
+            "    └── utils/")
     st.stop()
-
-
-# Page config
-st.set_page_config(
-    page_title="Trading Strategy Optimizer",
-    page_icon="📈",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 # Custom CSS
 st.markdown("""
@@ -86,10 +99,14 @@ st.sidebar.header("⚙️ Configuration")
 
 # API Key - Try to get from secrets first, then fall back to user input
 api_key = None
-if "FMP_API_KEY" in st.secrets:
-    api_key = st.secrets["FMP_API_KEY"]
-    st.sidebar.success("✅ API Key loaded from secrets")
-else:
+try:
+    if "FMP_API_KEY" in st.secrets:
+        api_key = st.secrets["FMP_API_KEY"]
+        st.sidebar.success("✅ API Key loaded from secrets")
+except Exception:
+    pass
+
+if not api_key:
     api_key = st.sidebar.text_input(
         "FMP API Key",
         type="password",
@@ -173,6 +190,7 @@ with tab1:
 
                     except Exception as e:
                         st.error(f"Error loading data: {str(e)}")
+                        st.exception(e)
                         st.session_state.data_loaded = False
 
         if st.session_state.data_loaded:

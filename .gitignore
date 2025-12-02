@@ -38,6 +38,9 @@ ENV/
 .env
 .env.local
 
+# Streamlit secrets (NEVER commit this!)
+.streamlit/secrets.toml
+
 # Output files
 output/
 *.png

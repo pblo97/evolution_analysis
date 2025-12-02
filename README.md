@@ -108,11 +108,15 @@ python main.py --api-key YOUR_API_KEY --symbol AAPL
 
 ### Option 2: Streamlit Web Interface
 
+#### Local Development
 ```bash
-streamlit run streamlit_app.py
+streamlit run app.py
 ```
 
 Then open your browser to `http://localhost:8501`
+
+#### Deploy to Streamlit Cloud
+See **[STREAMLIT_SETUP.md](STREAMLIT_SETUP.md)** for detailed deployment instructions.
 
 **Features:**
 - Interactive parameter tuning
@@ -120,6 +124,7 @@ Then open your browser to `http://localhost:8501`
 - Visual analysis and charts
 - Strategy comparison
 - Validation reports
+- Supports secrets management (no need to expose API keys)
 
 ## ⚙️ Configuration
 
