@@ -9,8 +9,6 @@ from typing import Dict, Any, List
 from dataclasses import dataclass
 from ..indicators.technical import (
     MomentumIndicator,
-    RSIIndicator,
-    MACDIndicator,
     BollingerBandsIndicator,
     ATRIndicator,
     EMACrossoverIndicator
@@ -44,9 +42,8 @@ class StrategyChromosome(Chromosome):
 
     INDICATOR_TYPES = [
         'momentum',
-        'rsi',
-        'macd',
         'bollinger',
+        'atr',
         'ema_cross'
     ]
 
@@ -120,34 +117,6 @@ class StrategyChromosome(Chromosome):
                 )
             }
 
-        elif indicator_type == 'rsi':
-            return {
-                'period': random.randint(
-                    ranges.get('period_min', 10),
-                    ranges.get('period_max', 20)
-                ),
-                'oversold': random.uniform(
-                    ranges.get('oversold_min', 25),
-                    ranges.get('oversold_max', 35)
-                ),
-                'overbought': random.uniform(
-                    ranges.get('overbought_min', 65),
-                    ranges.get('overbought_max', 75)
-                )
-            }
-
-        elif indicator_type == 'macd':
-            fast = random.randint(ranges.get('fast_min', 8), ranges.get('fast_max', 16))
-            slow = random.randint(ranges.get('slow_min', 20), ranges.get('slow_max', 30))
-            return {
-                'fast': fast,
-                'slow': max(slow, fast + 5),  # Ensure slow > fast
-                'signal': random.randint(
-                    ranges.get('signal_min', 7),
-                    ranges.get('signal_max', 11)
-                )
-            }
-
         elif indicator_type == 'bollinger':
             return {
                 'period': random.randint(
@@ -202,10 +171,6 @@ class StrategyChromosome(Chromosome):
         """Create indicator instance from type and parameters."""
         if indicator_type == 'momentum':
             return MomentumIndicator(**params)
-        elif indicator_type == 'rsi':
-            return RSIIndicator(**params)
-        elif indicator_type == 'macd':
-            return MACDIndicator(**params)
         elif indicator_type == 'bollinger':
             return BollingerBandsIndicator(**params)
         elif indicator_type == 'atr':

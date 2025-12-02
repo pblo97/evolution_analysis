@@ -39,36 +39,25 @@ genetic:
   complexity_penalty: 0.10  # Increased penalty for complex strategies
   max_indicators: 3  # Maximum indicators per strategy
 
-# Strategy Search Space (Theory-Based Constraints - Anti-Overfitting Protection #5)
+# Strategy Search Space (Evidence-Based Selection - Anti-Overfitting Protection #5)
+# Only using indicators with strong academic support
 strategy:
-  # Indicators to test
+  # Indicators to test (based on literature)
   indicators:
-    - momentum
-    - rsi
-    - macd
-    - bollinger
-    - atr
-    - ema_cross
+    - momentum      # Tier 1: Moskowitz et al. (2012) - Time Series Momentum
+    - ema_cross     # Tier 1: Brock et al. (1992) - Moving Average rules
+    - bollinger     # Tier 2: Volatility breakouts (Bollinger 1992)
+    - atr           # Tier 2: Risk management (Wilder 1978)
+
+  # Removed indicators with weak/inconsistent evidence:
+  # - rsi: Mixed evidence, prone to overfitting
+  # - macd: Lagging indicator, highly correlated with momentum
 
   # Parameter ranges (based on literature)
   parameters:
     momentum:
       lookback_min: 20
       lookback_max: 200
-    rsi:
-      period_min: 10
-      period_max: 20
-      oversold_min: 25
-      oversold_max: 35
-      overbought_min: 65
-      overbought_max: 75
-    macd:
-      fast_min: 8
-      fast_max: 16
-      slow_min: 20
-      slow_max: 30
-      signal_min: 7
-      signal_max: 11
     bollinger:
       period_min: 15
       period_max: 25
