@@ -115,7 +115,7 @@ class GeneticAlgorithm:
         return self.best_ever
 
     def _evaluate_population(self, data: pd.DataFrame, verbose: bool = True):
-        """Evaluate fitness for all individuals in population with diversity bonus."""
+        """Evaluate fitness with fitness sharing to maintain diversity."""
         if verbose:
             iterator = tqdm(self.population.individuals, desc="Evaluating")
         else:
@@ -126,8 +126,8 @@ class GeneticAlgorithm:
             fitness = self.fitness_function.evaluate(individual, data)
             individual.fitness = fitness
 
-        # Second pass: add diversity bonus
-        # Count how many of each indicator type we have
+        # Second pass: Fitness Sharing - heavily penalize similar strategies
+        # This prevents convergence to a single solution
         indicator_counts = {}
         for individual in self.population.individuals:
             entry_type = individual.genes['entry_indicator_type']
@@ -135,19 +135,21 @@ class GeneticAlgorithm:
             combo = f"{entry_type}+{exit_type}"
             indicator_counts[combo] = indicator_counts.get(combo, 0) + 1
 
-        # Apply diversity bonus: rare combinations get boosted
-        total_pop = len(self.population.individuals)
+        # Apply fitness sharing: divide fitness by square root of niche size
+        # This maintains diversity while still allowing good strategies to survive
         for individual in self.population.individuals:
-            entry_type = individual.genes['entry_indicator_type']
-            exit_type = individual.genes['exit_indicator_type']
-            combo = f"{entry_type}+{exit_type}"
+            if individual.fitness > 0:  # Only apply to valid strategies
+                entry_type = individual.genes['entry_indicator_type']
+                exit_type = individual.genes['exit_indicator_type']
+                combo = f"{entry_type}+{exit_type}"
 
-            # Rarity score: 1.0 for unique, 0.0 for common
-            rarity = 1.0 - (indicator_counts[combo] / total_pop)
+                niche_count = indicator_counts[combo]
 
-            # Add small diversity bonus (max 0.1)
-            diversity_bonus = rarity * 0.1
-            individual.fitness += diversity_bonus
+                # Use square root to avoid overly harsh penalty
+                # If 100 strategies use same combo, fitness is divided by 10
+                import math
+                sharing_factor = math.sqrt(niche_count)
+                individual.fitness = individual.fitness / max(1.0, sharing_factor)
 
     def _create_next_generation(self):
         """Create next generation using genetic operators."""
