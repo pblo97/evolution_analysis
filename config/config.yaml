@@ -100,8 +100,8 @@ fitness:
   win_rate_weight: 0.05  # Reduced (can be misleading)
   profit_factor_weight: 0.05  # Reduced (can be misleading)
 
-  # Minimum thresholds (relaxed for more exploration)
-  min_trades: 20  # Minimum trades to be valid (reduced from 30)
+  # Minimum thresholds (very relaxed to allow diverse strategies)
+  min_trades: 10  # Minimum trades to be valid (reduced to allow more strategies)
   min_sharpe: 0.0  # No minimum Sharpe (let GA explore)
 
 # Reporting Configuration
