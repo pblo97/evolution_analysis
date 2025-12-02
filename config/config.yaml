@@ -28,15 +28,15 @@ walk_forward:
 
 # Genetic Algorithm Configuration
 genetic:
-  population_size: 100
-  generations: 50
-  mutation_rate: 0.15
+  population_size: 150  # Increased for more diversity
+  generations: 75  # Increased for better convergence
+  mutation_rate: 0.25  # Increased for more exploration
   crossover_rate: 0.7
-  elitism: 0.1  # Keep top 10% unchanged
-  tournament_size: 5
+  elitism: 0.05  # Reduced to allow more exploration (keep top 5%)
+  tournament_size: 3  # Reduced for less selection pressure
 
   # Complexity Penalty (Anti-Overfitting Protection #3)
-  complexity_penalty: 0.05  # Penalize complex strategies
+  complexity_penalty: 0.10  # Increased penalty for complex strategies
   max_indicators: 3  # Maximum indicators per strategy
 
 # Strategy Search Space (Theory-Based Constraints - Anti-Overfitting Protection #5)
@@ -94,15 +94,15 @@ backtesting:
 
 # Fitness Function Configuration (Multi-Objective)
 fitness:
-  sharpe_weight: 0.30
-  total_return_weight: 0.30
-  max_drawdown_weight: 0.20
-  win_rate_weight: 0.10
-  profit_factor_weight: 0.10
+  sharpe_weight: 0.40  # Increased focus on risk-adjusted returns
+  total_return_weight: 0.25  # Reduced focus on raw returns
+  max_drawdown_weight: 0.25  # Increased focus on risk management
+  win_rate_weight: 0.05  # Reduced (can be misleading)
+  profit_factor_weight: 0.05  # Reduced (can be misleading)
 
-  # Minimum thresholds
-  min_trades: 30  # Minimum trades to be valid
-  min_sharpe: 0.5  # Minimum Sharpe to consider
+  # Minimum thresholds (relaxed for more exploration)
+  min_trades: 20  # Minimum trades to be valid (reduced from 30)
+  min_sharpe: 0.0  # No minimum Sharpe (let GA explore)
 
 # Reporting Configuration
 reporting:

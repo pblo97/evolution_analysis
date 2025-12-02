@@ -156,8 +156,11 @@ class PositionManager:
             take_profit=take_profit
         )
 
-        # Update cash
-        self.cash -= (abs(shares * price) + cost)
+        # Update cash (only pay for long positions, short positions give us cash)
+        if direction == 1:  # Long: we pay
+            self.cash -= (abs(shares * price) + cost)
+        else:  # Short: we receive (minus costs)
+            self.cash += (abs(shares * price) - cost)
 
         # Add to positions
         self.positions.append(position)
@@ -186,8 +189,13 @@ class PositionManager:
         cost = self.calculate_transaction_cost(price, position.shares)
         net_pnl = gross_pnl - cost
 
-        # Update cash
-        self.cash += abs(position.shares * price) - cost
+        # Update cash based on position type
+        if position.direction == 1:  # Closing long: receive proceeds
+            self.cash += (abs(position.shares) * price) - cost
+        else:  # Closing short: pay to buy back
+            self.cash -= (abs(position.shares) * price) + cost
+            # Also add the P&L from the short
+            self.cash += gross_pnl
 
         # Create trade record
         trade = {
