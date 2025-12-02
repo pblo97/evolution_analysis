@@ -1,5 +1,2 @@
-# System-level dependencies for Streamlit Cloud
-# This file is required for TA-Lib installation
-
 build-essential
 wget
