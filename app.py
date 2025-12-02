@@ -5,6 +5,15 @@ Run with: streamlit run app.py
 """
 
 import streamlit as st
+
+# Page config MUST be first Streamlit command
+st.set_page_config(
+    page_title="Trading Strategy Optimizer",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 import pandas as pd
 import numpy as np
 import yaml
@@ -15,18 +24,14 @@ from datetime import datetime
 import sys
 import os
 
-# Page config MUST be first Streamlit command
-st.set_page_config(
-    page_title="Trading Strategy Optimizer",
-    page_icon="📈",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# Fix import path for Streamlit Cloud
+current_dir = Path(__file__).parent.resolve()
+src_dir = current_dir / "src"
 
-# Add parent directory to path for imports
-parent_dir = Path(__file__).parent.absolute()
-if str(parent_dir) not in sys.path:
-    sys.path.insert(0, str(parent_dir))
+# Add both to path if not already there
+for path in [str(current_dir), str(src_dir)]:
+    if path not in sys.path:
+        sys.path.insert(0, path)
 
 # Now import our modules
 try:
@@ -38,19 +43,28 @@ try:
     from src.backtesting.metrics import PerformanceMetrics
 except ImportError as e:
     st.error(f"❌ Error importing modules: {e}")
-    st.info(f"📁 Current directory: {parent_dir}")
+    st.info(f"📁 Current directory: {current_dir}")
+    st.info(f"📂 Src directory: {src_dir}")
     st.info(f"🔍 Python path: {sys.path}")
-    st.code("Please ensure all required files are in the correct structure:\n"
-            "evolution_analysis/\n"
-            "├── app.py (this file)\n"
-            "└── src/\n"
-            "    ├── __init__.py\n"
-            "    ├── data/\n"
-            "    ├── indicators/\n"
-            "    ├── backtesting/\n"
-            "    ├── genetic/\n"
-            "    ├── validation/\n"
-            "    └── utils/")
+
+    # Debug: show what files exist
+    st.subheader("Debug Info:")
+    if src_dir.exists():
+        st.success(f"✅ src/ directory exists")
+        for subdir in ['data', 'indicators', 'backtesting', 'genetic', 'validation', 'utils']:
+            subdir_path = src_dir / subdir
+            if subdir_path.exists():
+                init_file = subdir_path / "__init__.py"
+                st.write(f"  ✅ src/{subdir}/ exists")
+                if init_file.exists():
+                    st.write(f"    ✅ __init__.py exists")
+                else:
+                    st.write(f"    ❌ __init__.py missing")
+            else:
+                st.write(f"  ❌ src/{subdir}/ missing")
+    else:
+        st.error("❌ src/ directory does not exist!")
+
     st.stop()
 
 # Custom CSS
